@@ -5,8 +5,6 @@ let draw ;
 
 let deckId ;
 
-let num = 1;
-
 fetch(shuffle, {
     method: 'GET',
     })
@@ -33,38 +31,52 @@ reset = document.querySelector('#reset')
 
 shared = document.querySelector('#shared');
 
+let num = 5;
+
 let count = 0 ;
 
+let cards = '';
+
 proceed.addEventListener('click',function() {
-    
-    fetch(draw,{
-        method: 'GET'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if ( count < 5) {
-            imgURL = data.cards[0].image
+    if (cards === '')
+        fetch(draw,{
+            method: 'GET'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            cards = data.cards
+            console.log(cards)
+            const imgURL = cards[0].image;
+            const card = document.createElement('div');
+            card.classList.add('card-box');
+            card.innerHTML = `<img src=${imgURL}>`
+            shared.appendChild(card)
+            count++
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    else {  
+        if (count < 5) {
+            const imgURL = cards[count].image
             const card = document.createElement('div');
             card.classList.add('card-box');
             card.innerHTML = `<img src=${imgURL}>`
             shared.appendChild(card)
             count++
         } else {
-            return
+            return 
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-    
+    }
 })
 
 reset.addEventListener('click',function() {
     shared.innerHTML = ""
+    cards = ''
     count = 0;
 })
